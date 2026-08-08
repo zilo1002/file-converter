@@ -13,9 +13,7 @@ export async function convEbook(file, target) {
           texts.push(div.textContent || div.innerText || '');
         }
       }
-      return new Blob([texts.join('
-
-')], { type: 'text/plain;charset=utf-8' });
+      return new Blob([texts.join('\n\n')], { type: 'text/plain;charset=utf-8' });
     }
     if (target === 'html') {
       let htmls = [];
@@ -34,9 +32,7 @@ export async function convEbook(file, target) {
       const c = u8[i];
       if ((c >= 32 && c < 127) || c === 10 || c === 13) text += String.fromCharCode(c);
     }
-    text = text.replace(/\s{4,}/g, '
-
-');
+    text = text.replace(/\s{4,}/g, '\n\n');
     return new Blob([text], { type: 'text/plain;charset=utf-8' });
   }
   throw new Error('电子书该转换组合暂不支持');
