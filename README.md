@@ -1,51 +1,50 @@
-FormatHub 🔄
-纯前端多格式文件转换工具 — 文件在浏览器本地处理，零上传、零服务器。
-
-Deploy
-License
+FormatHub — 纯前端多格式转换工具
 
 ✨ 功能特性
-纯前端处理 — 所有转换在浏览器内完成，文件不上传任何服务器
-隐私安全 — 敏感文档无需离开本地设备
-多文件批量 — 支持同时上传多个文件，独立设置目标格式
-200MB 单文件限制 — 大文件友好
-全平台适配 — 手机、平板、电脑完美响应
-零成本部署 — GitHub Pages 免费托管，自动 CI/CD
+    • **纯前端处理** — 所有转换在浏览器本地完成，文件不上传任何服务器，保护隐私
+    • **支持 40+ 格式** — 文档、图片、数据、电子书、压缩包五大分类
+    • **批量转换** — 一次上传多个文件，支持批量设置目标格式
+    • **文件预览** — 上传后即时预览：图片缩略图、文档前 500 字、表格前 10 行、压缩包文件列表
+    • **多选操作** — 支持勾选多个文件进行合并下载、压缩下载或压缩合并下载
+    • **图片高级处理** — 支持质量调节、尺寸裁剪、旋转（0°/90°/180°/270°）
+    • **JSON 格式化** — 美化、压缩、校验 JSON 文件
+    • **文件合并** — 文档/电子书/数据/图片均可合并（图片合并为 PDF）
+    • **多语言** — 中文 / English 一键切换
+    • **PWA 离线支持** — 安装为桌面应用，断网也能用
+    • **响应式设计** — 完美适配手机、平板、电脑
+
 📂 支持格式
-分类	源格式	可转换目标
-🖼️ 图片	JPG、PNG、WebP、GIF、BMP、SVG	互转全部（Canvas 编码）
-📊 数据	JSON、XML、CSV、YAML、TOML	互转全部（纯文本解析）
-📄 文档	DOCX	TXT、Markdown、HTML、PDF
-📈 表格	XLSX、XLS、CSV、ODS	CSV、JSON、XLSX、HTML
-📝 文本	TXT、Markdown	PDF（jsPDF 生成）
-📚 电子书	EPUB	TXT、HTML（ZIP 解压提取）
-📚 电子书	MOBI、AZW3	TXT（简单文本提取）
-💾 压缩包	ZIP	内容提取 / 重新打包
-⚠️ 已知限制
-由于是纯前端实现，以下功能受限：
+分类	支持格式	可转换目标
+📄 文档	DOCX, XLSX/XLS/CSV/ODS, TXT, MD, HTML	TXT, MD, HTML, PDF, CSV, JSON, XLSX
+🖼️ 图像	JPG/JPEG, PNG, GIF, BMP, WebP, TIFF/TIF, SVG	PNG, JPG, WebP, GIF, BMP
+💾 数据	JSON, XML, CSV, YAML/YML, TOML, ZIP	JSON, XML, CSV, YAML, TOML, ZIP
+📚 电子书	EPUB, MOBI, AZW3	TXT, HTML
 
-限制	说明
-DOCX 生成	只能读取/提取，无法生成 DOCX 文件
-PPTX 处理	暂不支持 PowerPoint 解析
-RAR / 7Z	浏览器端解压困难，仅支持 ZIP 格式
-MOBI → EPUB	格式复杂，仅支持简单文本提取
-大文件	受浏览器内存限制，建议 200MB 以内
-HEIC	依赖 heic2any，部分浏览器可能不支持
-🐛 常见问题
-Q: 手机能用吗？
-A: 完全支持。界面已做移动端适配，拖拽上传在手机上点击即可选择文件。
+🚀 快速开始
+# 克隆项目
+git clone https://github.com/your-username/file-converter.git
+cd file-converter
+ 
+# 安装依赖
+npm install
+ 
+# 本地开发
+npm run dev
+ 
+# 构建（输出到 dist 目录）
+npm run build
 
-Q: 文件安全吗？
-A: 100% 本地处理。所有转换逻辑在浏览器内执行，文件不会上传到任何服务器。可以断网使用（CDN 库需首次联网加载）。
+🛠️ 技术栈
+    • **Vite** — 构建工具
+    • **Tailwind CSS** — 样式框架
+    • **原生 JS** — 纯前端逻辑，无框架依赖
+    • **第三方库** — JSZip, PapaParse, js-yaml, XLSX, Mammoth, html2canvas, jsPDF（CDN 引入）
 
-🧰 技术栈
-Vite — 构建工具
-Tailwind CSS — 样式框架（CDN）
-JSZip — ZIP 处理
-SheetJS — Excel 解析
-mammoth.js — DOCX 提取
-jsPDF — PDF 生成
-PapaParse — CSV 解析
-js-yaml — YAML 处理
+📱 使用提示
+    • 单文件最大支持 **200MB**
+    • 在分类页内按 `Ctrl+V` 可直接粘贴截图或文件
+    • 转换完成后可选择「普通下载」「压缩下载」「合并下载」「压缩合并下载」
+    • 所有转换结果均可对比原文件/新文件大小变化
+
 📄 License
-MIT License — 自由使用、修改、分发。
+MIT
