@@ -25,16 +25,18 @@ FormatHub — 纯前端多格式转换工具
 • **响应式设计** — 完美适配手机、平板、电脑
 
 📂 支持格式
+
 分类	支持格式	可转换目标
+
 📄 文档	DOCX, XLSX/XLS/CSV/ODS, TXT, MD, HTML	TXT, MD, HTML, PDF, CSV, JSON, XLSX
+
 🖼️ 图像	JPG/JPEG, PNG, GIF, BMP, WebP, TIFF/TIF, SVG	PNG, JPG, WebP, GIF, BMP
+
 💾 数据	JSON, XML, CSV, YAML/YML, TOML, ZIP	JSON, XML, CSV, YAML, TOML, ZIP
+
 📚 电子书	EPUB, MOBI, AZW3	TXT, HTML
 
 🚀 快速开始
-# 克隆项目
-git clone https://github.com/your-username/file-converter.git
-cd file-converter
  
 # 安装依赖
 npm install
