@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="纯前端多格式文件转换工具，浏览器本地处理，零上传">
 <title>FormatHub - 多格式转换中心</title>
+<link rel="manifest" href="/file-converter/manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -17,6 +20,17 @@ body{font-family:'Inter',system-ui,sans-serif;-webkit-tap-highlight-color:transp
 select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.6rem center;background-size:1rem;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
 .view-enter{animation:slideIn 0.3s ease;}
+.lang-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;transition:all 0.2s;border:1px solid transparent;}
+.lang-btn.active{background:rgba(6,182,212,0.15);color:#22d3ee;border-color:rgba(6,182,212,0.3);}
+.lang-btn:not(.active){color:#94a3b8;border-color:rgba(148,163,184,0.2);}
+.lang-btn:not(.active):hover{background:rgba(148,163,184,0.1);}
+.range-slider{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#334155;outline:none;}
+.range-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#06b6d4;cursor:pointer;box-shadow:0 0 8px rgba(6,182,212,0.4);}
+.range-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#06b6d4;cursor:pointer;border:none;box-shadow:0 0 8px rgba(6,182,212,0.4);}
+.paste-hint{animation:pulseHint 2s ease-in-out infinite;}
+@keyframes pulseHint{0%,100%{opacity:0.6;}50%{opacity:1;}}
+.merge-area{border:1px dashed rgba(6,182,212,0.3);background:rgba(6,182,212,0.03);}
+@media(max-width:640px){.responsive-grid{grid-template-columns:1fr!important;}.responsive-flex{flex-direction:column!important;gap:8px!important;}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -31,5 +45,12 @@ select{-webkit-appearance:none;appearance:none;background-image:url("data:image/
 <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
 <div id="app"></div>
 <script type="module" src="/src/main.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/file-converter/sw.js').catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
