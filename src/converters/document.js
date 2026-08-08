@@ -1,76 +1,68 @@
-import { dlBlob, readAB, readText, getExt } from '../utils.js';
+import { readAB, readText, getExt } from '../utils.js';
 export async function convDoc(file, target) {
   const ext = getExt(file.name);
   const { jsPDF } = window.jspdf;
 
-  if (ext==='docx') {
+  if (ext === 'docx') {
     const ab = await readAB(file);
-    if (target==='txt'||target==='md') {
-      const r = await mammoth.extractRawText({arrayBuffer:ab});
-      dlBlob(new Blob([r.value],{type:'text/plain;charset=utf-8'}), file.name.replace(/\.docx$/i,'.'+target));
-      return;
+    if (target === 'txt' || target === 'md') {
+      const r = await mammoth.extractRawText({ arrayBuffer: ab });
+      return new Blob([r.value], { type: 'text/plain;charset=utf-8' });
     }
-    if (target==='html') {
-      const r = await mammoth.convertToHtml({arrayBuffer:ab});
-      const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+file.name+'</title></head><body>'+r.value+'</body></html>';
-      dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}), file.name.replace(/\.docx$/i,'.html'));
-      return;
+    if (target === 'html') {
+      const r = await mammoth.convertToHtml({ arrayBuffer: ab });
+      const html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + file.name + '</title></head><body>' + r.value + '</body></html>';
+      return new Blob([html], { type: 'text/html;charset=utf-8' });
     }
-    if (target==='pdf') {
-      const r = await mammoth.convertToHtml({arrayBuffer:ab});
-      const div=document.createElement('div'); div.innerHTML=r.value;
-      div.style.cssText='position:fixed;left:-9999px;top:0;width:800px;padding:40px;background:#fff;color:#000;font-family:sans-serif;line-height:1.6;';
+    if (target === 'pdf') {
+      const r = await mammoth.convertToHtml({ arrayBuffer: ab });
+      const div = document.createElement('div');
+      div.innerHTML = r.value;
+      div.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;padding:40px;background:#fff;color:#000;font-family:sans-serif;line-height:1.6;';
       document.body.appendChild(div);
-      const canvas=await html2canvas(div,{scale:2});
+      const canvas = await html2canvas(div, { scale: 2 });
       document.body.removeChild(div);
-      const pdf=new jsPDF('p','mm','a4');
-      const imgData=canvas.toDataURL('image/png');
-      const imgWidth=210, imgHeight=(canvas.height*imgWidth)/canvas.width;
-      pdf.addImage(imgData,'PNG',0,0,imgWidth,imgHeight);
-      pdf.save(file.name.replace(/\.docx$/i,'.pdf'));
-      return;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210, imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      return pdf.output('blob');
     }
   }
 
-  if (['xlsx','xls','csv','ods'].includes(ext)) {
+  if (['xlsx', 'xls', 'csv', 'ods'].includes(ext)) {
     const ab = await readAB(file);
-    const wb = XLSX.read(ab,{type:'array'});
+    const wb = XLSX.read(ab, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
-    if (target==='csv') {
-      dlBlob(new Blob([XLSX.utils.sheet_to_csv(ws)],{type:'text/csv'}), file.name.replace(/\.[^.]+$/i,'.csv'));
-      return;
+    if (target === 'csv') {
+      return new Blob([XLSX.utils.sheet_to_csv(ws)], { type: 'text/csv' });
     }
-    if (target==='json') {
-      dlBlob(new Blob([JSON.stringify(XLSX.utils.sheet_to_json(ws),null,2)],{type:'application/json'}), file.name.replace(/\.[^.]+$/i,'.json'));
-      return;
+    if (target === 'json') {
+      return new Blob([JSON.stringify(XLSX.utils.sheet_to_json(ws), null, 2)], { type: 'application/json' });
     }
-    if (target==='xlsx') {
-      const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
-      dlBlob(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), file.name.replace(/\.[^.]+$/i,'.xlsx'));
-      return;
+    if (target === 'xlsx') {
+      const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      return new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     }
-    if (target==='html') {
-      const html='<!DOCTYPE html><html><head><meta charset="utf-8"><style>table{border-collapse:collapse;font-size:13px}td,th{border:1px solid #ccc;padding:6px 10px}</style></head><body>'+XLSX.utils.sheet_to_html(ws)+'</body></html>';
-      dlBlob(new Blob([html],{type:'text/html'}), file.name.replace(/\.[^.]+$/i,'.html'));
-      return;
+    if (target === 'html') {
+      const html = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>table{border-collapse:collapse;font-size:13px}td,th{border:1px solid #ccc;padding:6px 10px}</style></head><body>' + XLSX.utils.sheet_to_html(ws) + '</body></html>';
+      return new Blob([html], { type: 'text/html' });
     }
   }
 
-  if (['txt','md'].includes(ext) && target==='pdf') {
+  if (['txt', 'md'].includes(ext) && target === 'pdf') {
     const text = await readText(file);
     const pdf = new jsPDF();
     const lines = pdf.splitTextToSize(text, 180);
-    let y=20;
-    for (const line of lines) { if(y>280){pdf.addPage();y=20;} pdf.text(line,15,y); y+=6; }
-    pdf.save(file.name.replace(/\.[^.]+$/i,'.pdf'));
-    return;
+    let y = 20;
+    for (const line of lines) { if (y > 280) { pdf.addPage(); y = 20; } pdf.text(line, 15, y); y += 6; }
+    return pdf.output('blob');
   }
 
-  if (['txt','md','html'].includes(ext) && ['txt','md','html'].includes(target)) {
+  if (['txt', 'md', 'html'].includes(ext) && ['txt', 'md', 'html'].includes(target)) {
     const text = await readText(file);
-    const mime = target==='html'?'text/html':'text/plain';
-    dlBlob(new Blob([text],{type:mime+';charset=utf-8'}), file.name.replace(/\.[^.]+$/i,'.'+target));
-    return;
+    const mime = target === 'html' ? 'text/html' : 'text/plain';
+    return new Blob([text], { type: mime + ';charset=utf-8' });
   }
 
   throw new Error('该转换组合暂不支持');
