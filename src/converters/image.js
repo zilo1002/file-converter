@@ -1,6 +1,14 @@
 import { readData, getExt } from '../utils.js';
-export async function convImage(file, target) {
+
+export async function convImage(file, target, opts = {}) {
   const ext = getExt(file.name);
+  const quality = opts.quality != null ? opts.quality : 0.92;
+  const maxW = opts.width || null;
+  const maxH = opts.height || null;
+  const rotate = opts.rotate || 0;
+
+  let canvas, ctx;
+
   if (ext === 'svg') {
     if (target === 'svg') return file;
     const text = await file.text();
@@ -8,26 +16,42 @@ export async function convImage(file, target) {
     const url = URL.createObjectURL(blob);
     const img = new Image();
     await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = url; });
-    const c = document.createElement('canvas');
-    c.width = img.naturalWidth || 800; c.height = img.naturalHeight || 600;
-    const ctx = c.getContext('2d');
-    if (target !== 'png') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); }
+    canvas = document.createElement('canvas');
+    let w = img.naturalWidth || 800;
+    let h = img.naturalHeight || 600;
+    if (rotate === 90 || rotate === 270) { const tmp = w; w = h; h = tmp; }
+    canvas.width = w; canvas.height = h;
+    ctx = canvas.getContext('2d');
+    if (target !== 'png') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    applyTransform(ctx, w, h, rotate);
     ctx.drawImage(img, 0, 0);
     URL.revokeObjectURL(url);
-    const mime = target === 'jpg' ? 'image/jpeg' : 'image/' + target;
-    const out = await new Promise(r => c.toBlob(r, mime, 0.92));
-    return out;
+  } else {
+    const dataUrl = await readData(file);
+    const img = new Image();
+    await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = dataUrl; });
+    let w = img.naturalWidth;
+    let h = img.naturalHeight;
+    if (maxW && w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    if (maxH && h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+    if (rotate === 90 || rotate === 270) { const tmp = w; w = h; h = tmp; }
+    canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    ctx = canvas.getContext('2d');
+    if (target !== 'png' && target !== 'webp' && target !== 'gif') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    applyTransform(ctx, w, h, rotate);
+    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, w, h);
   }
-  const dataUrl = await readData(file);
-  const img = new Image();
-  await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = dataUrl; });
-  const c = document.createElement('canvas');
-  c.width = img.naturalWidth; c.height = img.naturalHeight;
-  const ctx = c.getContext('2d');
-  if (target !== 'png' && target !== 'webp' && target !== 'gif') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); }
-  ctx.drawImage(img, 0, 0);
+
   const mime = target === 'jpg' ? 'image/jpeg' : 'image/' + target;
-  const out = await new Promise(r => c.toBlob(r, mime, target === 'webp' ? 0.85 : 0.92));
+  const q = target === 'webp' ? Math.min(quality, 0.85) : quality;
+  const out = await new Promise(r => canvas.toBlob(r, mime, q));
   if (!out) throw new Error('浏览器不支持导出此格式');
   return out;
+}
+
+function applyTransform(ctx, w, h, rotate) {
+  if (rotate === 90) { ctx.translate(w, 0); ctx.rotate(Math.PI / 2); }
+  else if (rotate === 180) { ctx.translate(w, h); ctx.rotate(Math.PI); }
+  else if (rotate === 270) { ctx.translate(0, h); ctx.rotate(-Math.PI / 2); }
 }
