@@ -1,4 +1,5 @@
 import { readAB, readText, getExt } from '../utils.js';
+
 export async function convDoc(file, target) {
   const ext = getExt(file.name);
   const { jsPDF } = window.jspdf;
@@ -24,7 +25,8 @@ export async function convDoc(file, target) {
       document.body.removeChild(div);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 210, imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       return pdf.output('blob');
     }
@@ -55,7 +57,11 @@ export async function convDoc(file, target) {
     const pdf = new jsPDF();
     const lines = pdf.splitTextToSize(text, 180);
     let y = 20;
-    for (const line of lines) { if (y > 280) { pdf.addPage(); y = 20; } pdf.text(line, 15, y); y += 6; }
+    for (const line of lines) {
+      if (y > 280) { pdf.addPage(); y = 20; }
+      pdf.text(line, 15, y);
+      y += 6;
+    }
     return pdf.output('blob');
   }
 
@@ -66,4 +72,26 @@ export async function convDoc(file, target) {
   }
 
   throw new Error('该转换组合暂不支持');
+}
+
+export async function mergeDocs(files, target, customName) {
+  let contents = [];
+  for (const f of files) {
+    const ext = getExt(f.name);
+    if (ext === 'docx') {
+      const ab = await f.arrayBuffer();
+      const r = await mammoth.extractRawText({ arrayBuffer: ab });
+      contents.push(r.value);
+    } else if (['txt', 'md', 'html'].includes(ext)) {
+      const text = await f.text();
+      contents.push(text);
+    } else {
+      throw new Error('仅支持 TXT/MD/HTML/DOCX 文件合并');
+    }
+  }
+  const joined = contents.join('\n\n---\n\n');
+  const mime = target === 'html' ? 'text/html' : 'text/plain';
+  const ext = target === 'html' ? 'html' : 'txt';
+  const name = customName || ('merged.' + ext);
+  return { blob: new Blob([joined], { type: mime + ';charset=utf-8' }), name };
 }
