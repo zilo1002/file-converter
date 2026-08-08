@@ -7,8 +7,7 @@ function toXML(obj, root='root') {
     if (Array.isArray(v)) return v.map(x => build(x, 'item')).join('');
     return Object.entries(v).map(([k, x]) => build(x, k)).join('');
   };
-  const xmlDecl = '<' + '?xml version="1.0" encoding="UTF-8"?' + '>';
-  return xmlDecl + '
+  return '<?xml version="1.0" encoding="UTF-8"?>
 <' + root + '>
 ' + build(obj, root) + '
 </' + root + '>';
