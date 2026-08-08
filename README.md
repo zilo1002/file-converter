@@ -48,16 +48,24 @@ npm run dev
 npm run build
 
 🛠️ 技术栈
-    • **Vite** — 构建工具
-    • **Tailwind CSS** — 样式框架
-    • **原生 JS** — 纯前端逻辑，无框架依赖
-    • **第三方库** — JSZip, PapaParse, js-yaml, XLSX, Mammoth, html2canvas, jsPDF（CDN 引入）
+    
+• **Vite** — 构建工具
+    
+• **Tailwind CSS** — 样式框架
+    
+• **原生 JS** — 纯前端逻辑，无框架依赖
+    
+• **第三方库** — JSZip, PapaParse, js-yaml, XLSX, Mammoth, html2canvas, jsPDF（CDN 引入）
 
 📱 使用提示
-    • 单文件最大支持 **200MB**
-    • 在分类页内按 `Ctrl+V` 可直接粘贴截图或文件
-    • 转换完成后可选择「普通下载」「压缩下载」「合并下载」「压缩合并下载」
-    • 所有转换结果均可对比原文件/新文件大小变化
+    
+• 单文件最大支持 **200MB**
+    
+• 在分类页内按 `Ctrl+V` 可直接粘贴截图或文件
+    
+• 转换完成后可选择「普通下载」「压缩下载」「合并下载」「压缩合并下载」
+    
+• 所有转换结果均可对比原文件/新文件大小变化
 
 📄 License
 MIT
