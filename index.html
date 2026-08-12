@@ -33,14 +33,49 @@ select{-webkit-appearance:none;appearance:none;background-image:url("data:image/
 @media(max-width:640px){.responsive-grid{grid-template-columns:1fr!important;}.responsive-flex{flex-direction:column!important;gap:8px!important;}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/toml.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ===== 按需加载 CDN 库 =====
+window._scriptLoader = {
+  loaded: new Set(),
+  loading: new Map(),
+
+  load(url) {
+    if (this.loaded.has(url)) return Promise.resolve();
+    if (this.loading.has(url)) return this.loading.get(url);
+    const promise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = url;
+      s.onload = () => { this.loaded.add(url); this.loading.delete(url); resolve(); };
+      s.onerror = () => reject(new Error('Failed to load ' + url));
+      document.head.appendChild(s);
+    });
+    this.loading.set(url, promise);
+    return promise;
+  },
+
+  async loadBatch(urls) {
+    await Promise.all(urls.map(u => this.load(u)));
+  },
+
+  isReady(catId) {
+    const libs = window._CATEGORY_LIBS[catId] || [];
+    return libs.every(u => this.loaded.has(u));
+  }
+};
+
+window._CATEGORY_LIBS = {
+  document: [
+    'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+  ],
+  data: [],
+  image: [],
+  ebook: [],
+  archive: []
+};
+</script>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
 <div id="app"></div>
