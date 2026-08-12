@@ -69,7 +69,7 @@ export async function convDoc(file, target) {
     return pdf.output('blob');
   }
 
-  if (['txt', 'md', 'html'].includes(ext) && ['txt', 'md', 'html'].includes(target)) {
+    if (['txt', 'md', 'html'].includes(ext) && ['txt', 'md', 'html', 'doc'].includes(target)) {
     const text = await readText(file);
     const mime = target === 'html' ? 'text/html' : 'text/plain';
     return new Blob([text], { type: mime + ';charset=utf-8' });
