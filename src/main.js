@@ -914,7 +914,10 @@ async function startConvert(catId) {
           // 文本→DOCX：需要 docx.js
           await ensureLibsReady('document');
           blob = await convDoc(item.file, target);
-        } else {
+        } else if (['txt', 'md', 'html'].includes(ext) && target === 'doc') {
+  await ensureLibsReady('document');
+  blob = await convDoc(item.file, 'docx');
+} else {
           // 其他文本互转：保持主线程（简单文本复制）
           blob = await convDoc(item.file, target);
         }
