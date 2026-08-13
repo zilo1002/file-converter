@@ -86,11 +86,32 @@ window._CATEGORY_LIBS = {
 <div id="app"></div>
 <script type="module" src="/src/main.js"></script>
 <script>
+// ===== Service Worker 注册 + 更新检测 =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/file-converter/sw.js').catch(()=>{});
+    navigator.serviceWorker.register('/file-converter/sw.js')
+      .then(reg => {
+        // 更新检测
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              window._swUpdateReady = true;
+              if (window._onSwUpdate) window._onSwUpdate();
+            }
+          });
+        });
+      })
+      .catch(() => {});
   });
 }
+// 安装提示
+window._deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  window._deferredPrompt = e;
+  if (window._onInstallPrompt) window._onInstallPrompt();
+});
 </script>
 </body>
 </html>
